@@ -1,8 +1,24 @@
-/**
+/*
  * All the CRUD endpoint actions together
  */
 
 import parseTodo from './parseTodo.js';
+
+
+export const getTodos = async (todo, request, response) => {
+  try {
+    const todoes = await todo.get();
+    todoes.sort((a, b) => {
+      return compareStrings(a.description, b.description);
+    }); 
+    await response.status(200).json({ todos: todoes});
+  } catch ({ message }) {
+    response.status(500);
+    response.json({ error: message });
+  }
+};
+
+
 
 /**
  * Getting the todos
@@ -11,14 +27,14 @@ import parseTodo from './parseTodo.js';
  * @param {*} request
  * @param {*} response
  */
-export const getTodos = async (todo, request, response) => {
-  try {
-    response.status(200).json({ todos: await todo.get() });
-  } catch ({ message }) {
-    response.status(500);
-    response.json({ error: message });
-  }
-};
+// export const getTodos = async (todo, request, response) => {
+//   try {
+//     response.status(200).json({ todos: await todo.get() });
+//   } catch ({ message }) {
+//     response.status(500);
+//     response.json({ error: message });
+//   }
+// };
 
 /**
  * Creates a new todo item
@@ -71,3 +87,12 @@ export const deleteTodo = async (todo, request, response) => {
     response.status(500).json({ error: message });
   }
 };
+
+
+
+// helper 
+function compareStrings(a, b) {
+  a = a.toLowerCase();
+  b = b.toLowerCase();
+  return (a < b) ? -1 : (a > b) ? 1 : 0;
+}
